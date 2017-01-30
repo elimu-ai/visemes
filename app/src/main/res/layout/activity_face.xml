@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.rajawali3d.surface.RajawaliSurfaceView
+        android:id="@+id/rajwali_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/letterSound1"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textAllCaps="false"
+            android:textSize="96sp"
+            android:text="e" />
+        <Button
+            android:id="@+id/letterSound2"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textAllCaps="false"
+            android:textSize="96sp"
+            android:text="t" />
+        <Button
+            android:id="@+id/letterSound3"
+            android:layout_width="256dp"
+            android:layout_height="256dp"
+            style="?android:attr/buttonBarButtonStyle"
+            android:textAllCaps="false"
+            android:textSize="96sp"
+            android:text="a" />
+    </LinearLayout>
+</RelativeLayout>
