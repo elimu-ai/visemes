@@ -1,2 +1,2 @@
-# literacyapp-visemes
+# visemes
 Android application
