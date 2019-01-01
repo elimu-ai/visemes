@@ -1,2 +1,3 @@
-# visemes
-Android application
+# Visemes
+
+Android application which animates visemes
