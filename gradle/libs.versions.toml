@@ -1,0 +1,23 @@
+[versions]
+elimuContentProvider = "1.4.78"
+junit = "4.13.2"
+composeBom = "2025.09.00"
+activityCompose = "1.11.0"
+kotlin = "2.2.0"
+agp = "8.9.1"
+
+[libraries]
+elimu-content-provider = { group = "ai.elimu", name = "content-provider", version.ref = "elimuContentProvider" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-compose-gradle-plugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+agp = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+[plugins]

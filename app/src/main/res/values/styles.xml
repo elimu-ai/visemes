@@ -1,0 +1,4 @@
+<resources>
+    <!-- The UI is drawn with Jetpack Compose, so the window only needs a plain, action bar free theme. -->
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

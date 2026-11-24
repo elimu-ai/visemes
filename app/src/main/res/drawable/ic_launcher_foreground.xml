@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A cartoon mouth: purple lips, a dark mouth opening with teeth and a pink tongue.
+    Everything stays inside the 66dp "safe zone" at the centre of the 108dp adaptive icon.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Lips -->
+    <path
+        android:fillColor="#9C4DCC"
+        android:strokeColor="#4A148C"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2"
+        android:pathData="M27,54 C27,36 81,36 81,54 C81,74 27,74 27,54 Z" />
+
+    <!-- Inside of the mouth: dark opening, upper teeth and tongue, all clipped to the opening -->
+    <group>
+        <clip-path android:pathData="M34,54 C34,46 74,46 74,54 C74,64 34,64 34,54 Z" />
+        <path
+            android:fillColor="#45122F"
+            android:pathData="M30,40 h48 v30 h-48 z" />
+        <path
+            android:fillColor="#FF7C9C"
+            android:pathData="M40,60 C40,52 68,52 68,60 L68,70 L40,70 Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M38,44 h32 v6 h-32 z" />
+    </group>
+
+    <!-- Edge of the mouth opening -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#4A148C"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.5"
+        android:pathData="M34,54 C34,46 74,46 74,54 C74,64 34,64 34,54 Z" />
+
+    <!-- Highlight on the upper lip -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#C792EA"
+        android:strokeLineCap="round"
+        android:strokeWidth="2"
+        android:pathData="M38,46 C44,42 50,41 56,41" />
+</vector>

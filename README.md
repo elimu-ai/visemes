@@ -2,6 +2,19 @@
 
 Android application which animates visemes
 
+A viseme is the mouth shape that goes with a speech sound. The app loads all letter-sound correspondences from the [elimu.ai Content Provider](https://github.com/elimu-ai/content-provider), picks the most frequently used one, and shows its sound(s) together with an animated cartoon mouth (purple lips, teeth and tongue). Press the mouth, or the button, to hear the sound: while it plays, the mouth moves from neutral to the shape of the sound, and back to neutral.
+
+Built with Jetpack Compose.
+
+| Part | Where |
+| --- | --- |
+| Screen showing the most frequent letter-sound | `ui/LetterSoundVisemeActivity.kt` |
+| `@Composable` lips, drawn on a `Canvas` | `ui/lips/Lips.kt` |
+| Neutral → sound → neutral animation | `ui/lips/AnimatedLips.kt` |
+| Mouth shape of each IPA sound | `viseme/Viseme.kt`, `viseme/VisemeMapper.kt` |
+
+**Requires** the elimu.ai Content Provider app to be installed on the device.
+
 ---
 
 <p align="center">
