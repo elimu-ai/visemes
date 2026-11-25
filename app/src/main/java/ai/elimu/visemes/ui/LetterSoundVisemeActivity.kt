@@ -37,12 +37,15 @@ class LetterSoundVisemeActivity : ComponentActivity() {
         setContent {
             val uiState by viewModel.uiState.collectAsState()
             val playback by viewModel.playback.collectAsState()
+            val showNext by viewModel.showNext.collectAsState()
 
             MaterialTheme(colorScheme = VisemeColorScheme) {
                 LetterSoundVisemeScreen(
                     uiState = uiState,
                     playback = playback,
-                    onPlaySound = viewModel::playSound
+                    showNext = showNext,
+                    onPlaySound = viewModel::playSound,
+                    onNextSound = viewModel::nextSound
                 )
             }
         }

@@ -2,6 +2,7 @@
     <string name="app_name">Visemes</string>
 
     <string name="play_sound">Play sound</string>
+    <string name="next_sound">Next sound</string>
     <!-- The lips are purely visual, so this is used as the accessibility description. -->
     <string name="lips_description">Animated mouth showing how to move the lips and tongue to make the sound. Press to hear the sound.</string>
     <string name="letter_sound_unavailable">Letters could not be loaded. Please make sure the content provider app is installed.</string>
