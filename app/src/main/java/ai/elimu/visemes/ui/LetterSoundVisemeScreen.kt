@@ -31,8 +31,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -156,6 +158,13 @@ private fun NextSoundButton(onClick: () -> Unit) {
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
+        // No shadow: a flat purple circle
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
+            focusedElevation = 0.dp,
+            hoveredElevation = 0.dp
+        ),
         modifier = Modifier.semantics { contentDescription = description }
     ) {
         val arrowColor = LocalContentColor.current
@@ -293,6 +302,14 @@ private fun MouthPanel(
 private fun PlaySoundButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
+        // Elevated, and flat while it is pressed. Material animates the change in both directions,
+        // so it goes back up to elevated when released.
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 0.dp,
+            focusedElevation = 6.dp,
+            hoveredElevation = 6.dp
+        ),
         modifier = Modifier
             .height(56.dp)
             .widthIn(min = 200.dp)
