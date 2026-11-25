@@ -45,8 +45,12 @@ fun AnimatedLips(
 
     LaunchedEffect(playback.playId, visemes) {
         // Nothing to animate until a sound is started. (A sound that has already finished, e.g.
-        // when the screen is rotated, is not played again.)
-        if (playback.playId == 0 || !playback.isPlaying) return@LaunchedEffect
+        // when the screen is rotated, is not played again.) The mouth only needs to settle back to
+        // neutral, in case this effect cut a movement short (e.g. when going to the next sound).
+        if (playback.playId == 0 || !playback.isPlaying) {
+            animator.moveTo(LipShape.Neutral, TRANSITION_MS)
+            return@LaunchedEffect
+        }
 
         // Neutral -> the sound (one mouth shape at a time) ...
         for (viseme in visemes) {
