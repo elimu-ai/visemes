@@ -1,5 +1,5 @@
 [versions]
-elimuContentProvider = "1.4.78"
+elimuContentProvider = "1.4.84"
 junit = "4.13.2"
 composeBom = "2025.09.00"
 activityCompose = "1.11.0"
