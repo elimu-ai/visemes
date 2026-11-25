@@ -138,7 +138,7 @@ fun LetterSoundVisemeScreen(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .safeDrawingPadding()
-                    .padding(24.dp)
+                    .padding(horizontal = 48.dp, vertical = 24.dp)
             ) {
                 NextSoundButton(onClick = onNextSound)
             }
