@@ -111,6 +111,10 @@ class LetterSoundVisemeViewModel(application: Application) : AndroidViewModel(ap
     /** Goes on to the next letter-sound (the next most frequent one). */
     fun nextSound() {
         if (!queue.hasNext) return
+        // Only after the sound has been played. This also stops a second press of the arrow, while
+        // it is fading out, from skipping a letter-sound.
+        val playbackNow = playback.value
+        if (playbackNow.playId <= playIdAtStart.value || playbackNow.isPlaying) return
 
         soundPlayer.stop()
         // Counts as "not played yet" for the new letter-sound. Set before the new letter-sound is

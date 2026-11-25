@@ -4,9 +4,14 @@ import ai.elimu.visemes.R
 import ai.elimu.visemes.audio.PlaybackState
 import ai.elimu.visemes.ui.lips.AnimatedLips
 import ai.elimu.visemes.viseme.Viseme
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,6 +55,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/** How long it takes to slide from one letter-sound to the next. */
+private const val TASK_TRANSITION_MS = 450
+
 private val Purple = Color(0xFF7B3FA0)
 
 /** The "skin" behind the lips. It makes the purple lips easy to see. */
@@ -75,25 +83,53 @@ fun LetterSoundVisemeScreen(
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(modifier = Modifier.fillMaxSize()) {
-            when (uiState) {
-                LetterSoundVisemeUiState.Loading -> Centered {
-                    CircularProgressIndicator()
-                }
+            AnimatedContent(
+                targetState = uiState,
+                // Only a different letter-sound is a new "task". (Not e.g. `hasNext` changing.)
+                contentKey = { state ->
+                    if (state is LetterSoundVisemeUiState.Loaded) {
+                        "loaded:${state.letters}:${state.soundsIpa}"
+                    } else {
+                        state.toString()
+                    }
+                },
+                transitionSpec = {
+                    if (initialState is LetterSoundVisemeUiState.Loaded &&
+                        targetState is LetterSoundVisemeUiState.Loaded
+                    ) {
+                        // From one task to the next: the current one slides away to the left, and
+                        // the next one comes in from the right
+                        (slideInHorizontally(tween(TASK_TRANSITION_MS)) { fullWidth -> fullWidth } +
+                            fadeIn(tween(TASK_TRANSITION_MS))) togetherWith
+                            (slideOutHorizontally(tween(TASK_TRANSITION_MS)) { fullWidth -> -fullWidth } +
+                                fadeOut(tween(TASK_TRANSITION_MS)))
+                    } else {
+                        fadeIn() togetherWith fadeOut()
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+                label = "letterSoundTransition"
+            ) { state ->
+                when (state) {
+                    LetterSoundVisemeUiState.Loading -> Centered {
+                        CircularProgressIndicator()
+                    }
 
-                LetterSoundVisemeUiState.Unavailable -> Centered {
-                    Text(
-                        text = stringResource(R.string.letter_sound_unavailable),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(32.dp)
+                    LetterSoundVisemeUiState.Unavailable -> Centered {
+                        Text(
+                            text = stringResource(R.string.letter_sound_unavailable),
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(32.dp)
+                        )
+                    }
+
+                    is LetterSoundVisemeUiState.Loaded -> LoadedContent(
+                        state = state,
+                        playback = playback,
+                        onPlaySound = onPlaySound
                     )
                 }
-
-                is LetterSoundVisemeUiState.Loaded -> LoadedContent(
-                    state = uiState,
-                    playback = playback,
-                    onPlaySound = onPlaySound
-                )
             }
 
             // In the bottom right corner of the screen
