@@ -29,13 +29,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -154,20 +150,15 @@ fun LetterSoundVisemeScreen(
 @Composable
 private fun NextSoundButton(onClick: () -> Unit) {
     val description = stringResource(R.string.next_sound)
-    FloatingActionButton(
+    RaisedSurface(
+        faceColor = MaterialTheme.colorScheme.primary,
+        shape = CircleShape,
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-        // No shadow: a flat purple circle
-        elevation = FloatingActionButtonDefaults.elevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            focusedElevation = 0.dp,
-            hoveredElevation = 0.dp
-        ),
-        modifier = Modifier.semantics { contentDescription = description }
+        modifier = Modifier
+            .size(56.dp)
+            .semantics { contentDescription = description }
     ) {
-        val arrowColor = LocalContentColor.current
+        val arrowColor = MaterialTheme.colorScheme.onPrimary
         Canvas(modifier = Modifier.size(28.dp)) {
             val strokeWidth = 3.dp.toPx()
             val tail = Offset(size.width * 0.1f, size.height / 2f)
@@ -300,24 +291,20 @@ private fun MouthPanel(
 
 @Composable
 private fun PlaySoundButton(onClick: () -> Unit) {
-    Button(
+    RaisedSurface(
+        faceColor = MaterialTheme.colorScheme.primary,
+        shape = RoundedCornerShape(16.dp),
         onClick = onClick,
-        // Elevated, and flat while it is pressed. Material animates the change in both directions,
-        // so it goes back up to elevated when released.
-        elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 6.dp,
-            pressedElevation = 0.dp,
-            focusedElevation = 6.dp,
-            hoveredElevation = 6.dp
-        ),
         modifier = Modifier
             .height(56.dp)
             .widthIn(min = 200.dp)
     ) {
         Text(
             text = stringResource(R.string.play_sound),
+            color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 24.dp)
         )
     }
 }
