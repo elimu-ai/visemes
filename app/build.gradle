@@ -1,32 +1,59 @@
-apply plugin: 'com.android.application'
+plugins {
+    id('com.android.application')
+    id('kotlin-android')
+    id('org.jetbrains.kotlin.plugin.compose')
+}
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    namespace 'ai.elimu.visemes'
+    compileSdk 36
 
     defaultConfig {
-        applicationId "org.literacyapp.visemes"
-        minSdkVersion 21
-        targetSdkVersion 23
-        versionCode 10000000
-        versionName "1.0.0"
+        applicationId "ai.elimu.visemes"
+        minSdkVersion 29
+        targetSdkVersion 36
+        versionCode 2000000
+        versionName "2.0.0-SNAPSHOT"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            manifestPlaceholders = [contentProviderApplicationId: "ai.elimu.content_provider.debug"]
+            buildConfigField("String", "CONTENT_PROVIDER_APPLICATION_ID", '"ai.elimu.content_provider.debug"')
+        }
         release {
             minifyEnabled false
+            manifestPlaceholders = [contentProviderApplicationId: "ai.elimu.content_provider"]
+            buildConfigField("String", "CONTENT_PROVIDER_APPLICATION_ID", '"ai.elimu.content_provider"')
         }
     }
 
-    lintOptions {
-        abortOnError false
+    buildFeatures {
+        buildConfig true
+        compose true
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'org.rajawali3d:rajawali:1.0.325@aar'
+    implementation libs.elimu.content.provider // https://jitpack.io/#ai.elimu/content-provider
+
+    // Jetpack Compose
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
+
+    testImplementation libs.junit
 }
