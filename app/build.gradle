@@ -16,8 +16,8 @@ android {
         applicationId "ai.elimu.visemes"
         minSdkVersion 29
         targetSdkVersion 36
-        versionCode 2000002
-        versionName "2.0.2"
+        versionCode 2000003
+        versionName "2.0.3-SNAPSHOT"
     }
 
     compileOptions {
