@@ -138,9 +138,16 @@ fun LetterSoundVisemeScreen(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .safeDrawingPadding()
-                    .padding(24.dp)
+                    // The edge below the button is part of the button (see below), so it takes up
+                    // that much of the bottom margin. The button itself stays where it is.
+                    .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 24.dp - RaisedEdgeHeight)
             ) {
-                NextSoundButton(onClick = onNextSound)
+                // The darker edge sticks out below the button. While this fades in or out, it is
+                // drawn in a layer that is cut off at the edge of the content, so the edge has to
+                // be inside it. Otherwise the bottom of the button is cut off.
+                Box(modifier = Modifier.padding(bottom = RaisedEdgeHeight)) {
+                    NextSoundButton(onClick = onNextSound)
+                }
             }
         }
     }
