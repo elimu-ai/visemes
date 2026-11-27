@@ -6,9 +6,16 @@ A viseme is the mouth shape that goes with a speech sound. The app loads all let
 
 Built with Jetpack Compose.
 
+Activities are grouped by what they are for, with one folder per activity:
+
+- `ui/learning/` — learning activities
+- `ui/assessment/` — assessment activities
+
+Components that activities share are in `ui/`.
+
 | Part | Where |
 | --- | --- |
-| Screen showing the most frequent letter-sound | `ui/LetterSoundVisemeActivity.kt` |
+| Screen showing the most frequent letter-sound | `ui/learning/lettersoundviseme/` |
 | `@Composable` lips, drawn on a `Canvas` | `ui/lips/Lips.kt` |
 | Neutral → sound → neutral animation | `ui/lips/AnimatedLips.kt` |
 | Mouth shape of each IPA sound | `viseme/Viseme.kt`, `viseme/VisemeMapper.kt` |

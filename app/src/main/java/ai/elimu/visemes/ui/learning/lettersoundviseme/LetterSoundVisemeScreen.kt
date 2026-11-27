@@ -1,7 +1,9 @@
-package ai.elimu.visemes.ui
+package ai.elimu.visemes.ui.learning.lettersoundviseme
 
 import ai.elimu.visemes.R
 import ai.elimu.visemes.audio.PlaybackState
+import ai.elimu.visemes.ui.RaisedEdgeHeight
+import ai.elimu.visemes.ui.RaisedSurface
 import ai.elimu.visemes.ui.lips.AnimatedLips
 import ai.elimu.visemes.viseme.Viseme
 import androidx.compose.animation.AnimatedContent

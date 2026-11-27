@@ -1,4 +1,4 @@
-package ai.elimu.visemes.ui
+package ai.elimu.visemes.ui.learning.lettersoundviseme
 
 import android.graphics.Color
 import android.os.Bundle
