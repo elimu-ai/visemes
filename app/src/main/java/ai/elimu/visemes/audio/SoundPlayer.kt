@@ -88,8 +88,10 @@ class SoundPlayer(context: Context) {
 
     /**
      * Says [text], replacing any sound that is already playing.
+     *
+     * @return `false` if the sound could not be played (the animation is then shown without sound).
      */
-    fun play(text: String) {
+    fun play(text: String): Boolean {
         // Marked as playing right away (and not when the engine reports that it has started), so
         // that the UI never sees a sound that was requested but is not "playing".
         val playId = _state.updateAndGet {
@@ -106,7 +108,9 @@ class SoundPlayer(context: Context) {
         if (result != TextToSpeech.SUCCESS) {
             Log.w(TAG, "Could not speak. Showing the animation without sound.")
             mainHandler.postDelayed({ markFinished(utteranceIdOf(playId)) }, SILENT_DURATION_MS)
+            return false
         }
+        return true
     }
 
     /** Stops the sound that is playing (if any). */
