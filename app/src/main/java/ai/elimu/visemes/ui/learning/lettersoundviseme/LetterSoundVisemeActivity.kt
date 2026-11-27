@@ -14,10 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
 /**
- * Shows the sound(s) of the most frequent letter-sound, together with an animated mouth (visemes)
- * which shows how the lips and tongue move to make the sound.
+ * Learning activity: shows the sound(s) of a letter-sound, together with an animated mouth
+ * (visemes) which shows how the lips and tongue move to make the sound.
  *
- * The letter-sounds are loaded from the elimu.ai Content Provider.
+ * Which letter-sound is given by the caller (see `Intent.putLetterSound`). The activity finishes
+ * with [RESULT_OK] when the student presses the arrow, after having played the sound.
  */
 class LetterSoundVisemeActivity : ComponentActivity() {
 
@@ -36,17 +37,19 @@ class LetterSoundVisemeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val uiState by viewModel.uiState.collectAsState()
             val playback by viewModel.playback.collectAsState()
             val showNext by viewModel.showNext.collectAsState()
 
             MaterialTheme(colorScheme = VisemeColorScheme) {
                 LetterSoundVisemeScreen(
-                    uiState = uiState,
+                    uiState = viewModel.uiState,
                     playback = playback,
                     showNext = showNext,
                     onPlaySound = viewModel::playSound,
-                    onNextSound = viewModel::nextSound
+                    onNext = {
+                        setResult(RESULT_OK)
+                        finish()
+                    }
                 )
             }
         }

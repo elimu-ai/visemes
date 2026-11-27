@@ -3,7 +3,7 @@ package ai.elimu.visemes.ui.assessment.phonemeisolation
 import ai.elimu.visemes.content.LetterSoundCandidate
 import ai.elimu.visemes.content.WordCandidate
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PhonemeIsolationQuestionFactoryTest {
@@ -22,12 +22,12 @@ class PhonemeIsolationQuestionFactoryTest {
         image: String? = "$text.png"
     ) = WordCandidate(text, { letterSounds.toList() }, { image })
 
-    private fun create(vararg words: WordCandidate<String>, max: Int = 10) =
-        PhonemeIsolationQuestionFactory.create(words.asSequence(), all, max)
+    private fun create(vararg words: WordCandidate<String>, target: LetterSoundCandidate = c) =
+        PhonemeIsolationQuestionFactory.create(target, words.asSequence(), all)
 
     @Test
     fun asksForTheFirstSoundOfTheWord() {
-        val question = create(word("cat", c, a, t)).single()
+        val question = create(word("cat", c, a, t))!!
 
         assertEquals("cat", question.word)
         assertEquals("cat.png", question.image)
@@ -39,42 +39,56 @@ class PhonemeIsolationQuestionFactoryTest {
     @Test
     fun theDistractorIsNotHeardInTheWord() {
         repeat(50) {
-            val question = create(word("cat", c, a, t)).single()
+            val question = create(word("cat", c, a, t))!!
             // Not /k/ (also spelled "k"), /æ/ or /t/, and not "x" which has two sounds
             assertEquals(o, question.options.single { !question.isCorrect(it) })
         }
     }
 
     @Test
-    fun usesTheFirstWordOfEachLetterSound() {
-        val questions = create(word("cat", c, a, t), word("cot", c, o, t), word("top", t, o))
+    fun usesTheFirstWordThatStartsWithTheLetterSound() {
+        val question = create(word("top", t, o), word("cat", c, a, t), word("cot", c, o, t))
 
-        assertEquals(listOf("top", "cat"), questions.map { it.word })
+        assertEquals("cat", question?.word)
+    }
+
+    @Test
+    fun skipsWordsThatStartWithAnotherSoundOfTheSameLetters() {
+        val softC = LetterSoundCandidate("c", listOf("s"), 10)
+
+        val question = create(word("cell", softC), word("cat", c, a, t))
+
+        assertEquals("cat", question?.word)
+    }
+
+    @Test
+    fun doesNotReadTheLetterSoundsOfWordsWithOtherFirstLetters() {
+        val unread = WordCandidate<String>("top", { error("should not be read") }, { null })
+
+        assertEquals("cat", create(unread, word("cat", c, a, t))?.word)
     }
 
     @Test
     fun skipsWordsWithoutAPicture() {
-        val questions = create(word("cat", c, a, t, image = null), word("cot", c, o, t))
+        val question = create(word("cat", c, a, t, image = null), word("cot", c, o, t))
 
-        assertEquals(listOf("cot"), questions.map { it.word })
+        assertEquals("cot", question?.word)
     }
 
     @Test
-    fun skipsWordsThatDoNotStartWithASinglePhoneme() {
-        assertTrue(create(word("xa", x, a), word("empty")).isEmpty())
+    fun hasNoQuestionForALetterSoundWithSeveralSounds() {
+        assertNull(create(word("xa", x, a), target = x))
     }
 
     @Test
-    fun skipsAWordIfThereIsNoDistractor() {
+    fun hasNoQuestionIfNoWordStartsWithTheLetterSound() {
+        assertNull(create(word("top", t, o)))
+    }
+
+    @Test
+    fun hasNoQuestionIfThereIsNoDistractor() {
         val words = sequenceOf(word("cat", c, a, t))
 
-        assertTrue(PhonemeIsolationQuestionFactory.create(words, listOf(c, k, a, t)).isEmpty())
-    }
-
-    @Test
-    fun stopsReadingWordsWhenThereAreEnoughQuestions() {
-        val unread = WordCandidate<String>("top", { error("should not be read") }, { null })
-
-        assertEquals(1, create(word("cat", c, a, t), unread, max = 1).size)
+        assertNull(PhonemeIsolationQuestionFactory.create(c, words, listOf(c, k, a, t)))
     }
 }

@@ -78,31 +78,6 @@ class LetterSoundSelectorTest {
     }
 
     @Test
-    fun theQueueGoesThroughTheLetterSoundsAndStopsAtTheLastOne() {
-        val a = candidate("a", 3, "æ")
-        val s = candidate("s", 2, "s")
-        var queue = LetterSoundQueue(listOf(a, s))
-
-        assertEquals(a, queue.current)
-        assertEquals(true, queue.hasNext)
-
-        queue = queue.next()
-        assertEquals(s, queue.current)
-        assertEquals(false, queue.hasNext)
-
-        assertEquals(s, queue.next().current) // stays on the last one
-    }
-
-    @Test
-    fun anEmptyQueueHasNothingToShow() {
-        val queue = LetterSoundQueue(emptyList())
-
-        assertNull(queue.current)
-        assertEquals(false, queue.hasNext)
-        assertNull(queue.next().current)
-    }
-
-    @Test
     fun returnsNullWhenThereIsNothingToShow() {
         assertNull(LetterSoundSelector.mostFrequent(emptyList()))
         assertNull(LetterSoundSelector.mostFrequent(listOf(candidate("", 1, "x"))))

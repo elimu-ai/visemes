@@ -1,4 +1,16 @@
 <resources>
     <!-- The UI is drawn with Jetpack Compose, so the window only needs a plain, action bar free theme. -->
     <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- The learning and assessment activities, which slide in and out one after the other -->
+    <style name="TaskTheme" parent="AppTheme">
+        <item name="android:windowAnimationStyle">@style/TaskAnimation</item>
+    </style>
+
+    <style name="TaskAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/stay</item>
+        <item name="android:activityCloseEnterAnimation">@anim/stay</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_left</item>
+    </style>
 </resources>

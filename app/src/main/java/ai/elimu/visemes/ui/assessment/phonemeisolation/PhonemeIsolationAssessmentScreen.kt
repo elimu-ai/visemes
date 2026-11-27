@@ -2,21 +2,18 @@ package ai.elimu.visemes.ui.assessment.phonemeisolation
 
 import ai.elimu.visemes.R
 import ai.elimu.visemes.content.LetterSoundCandidate
+import ai.elimu.visemes.ui.Centered
 import ai.elimu.visemes.ui.NextButton
 import ai.elimu.visemes.ui.RaisedEdgeHeight
 import ai.elimu.visemes.ui.RaisedSurface
 import ai.elimu.visemes.ui.VisemeColorScheme
 import android.graphics.Bitmap
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,9 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-/** How long it takes to slide from one question to the next. */
-private const val QUESTION_TRANSITION_MS = 450
 
 /** The frame around the picture. */
 private val PictureFrameColor = Color(0xFFD9C2EA)
@@ -104,47 +98,17 @@ fun PhonemeIsolationAssessmentScreen(
 
     Surface(modifier = modifier.fillMaxSize(), color = background) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedContent(
-                targetState = uiState,
-                // Only a different question is new content. (Not e.g. an option being picked.)
-                contentKey = { state ->
-                    if (state is PhonemeIsolationUiState.Question) state.index else state
-                },
-                transitionSpec = {
-                    if (initialState is PhonemeIsolationUiState.Question &&
-                        targetState is PhonemeIsolationUiState.Question
-                    ) {
-                        (slideInHorizontally(tween(QUESTION_TRANSITION_MS)) { fullWidth -> fullWidth } +
-                            fadeIn(tween(QUESTION_TRANSITION_MS))) togetherWith
-                            (slideOutHorizontally(tween(QUESTION_TRANSITION_MS)) { fullWidth -> -fullWidth } +
-                                fadeOut(tween(QUESTION_TRANSITION_MS)))
-                    } else {
-                        fadeIn() togetherWith fadeOut()
-                    }
-                },
-                modifier = Modifier.fillMaxSize(),
-                label = "questionTransition"
-            ) { state ->
-                when (state) {
-                    PhonemeIsolationUiState.Loading -> Centered {
-                        CircularProgressIndicator()
-                    }
-
-                    PhonemeIsolationUiState.Unavailable -> Centered {
-                        Text(
-                            text = stringResource(R.string.phoneme_isolation_unavailable),
-                            style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(32.dp)
-                        )
-                    }
-
-                    is PhonemeIsolationUiState.Question -> QuestionContent(
-                        state = state,
-                        onPlayWord = onPlayWord,
-                        onOptionSelected = onOptionSelected
-                    )
+            when (uiState) {
+                // When unavailable, the activity is about to finish
+                PhonemeIsolationUiState.Loading, PhonemeIsolationUiState.Unavailable -> Centered {
+                    CircularProgressIndicator()
                 }
+
+                is PhonemeIsolationUiState.Question -> QuestionContent(
+                    state = uiState,
+                    onPlayWord = onPlayWord,
+                    onOptionSelected = onOptionSelected
+                )
             }
 
             // In the bottom right corner of the screen
@@ -160,7 +124,7 @@ fun PhonemeIsolationAssessmentScreen(
                 // The edge of the button has to be inside the content, or it is cut off while fading
                 Box(modifier = Modifier.padding(bottom = RaisedEdgeHeight)) {
                     NextButton(
-                        description = stringResource(R.string.next_question),
+                        description = stringResource(R.string.next),
                         onClick = onNext,
                         shape = OptionShape,
                         modifier = Modifier.size(width = 120.dp, height = NextButtonHeight)
@@ -168,19 +132,6 @@ fun PhonemeIsolationAssessmentScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun Centered(content: @Composable () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        content()
     }
 }
 
@@ -344,8 +295,7 @@ private fun PreviewScreen(selectCorrect: Boolean? = null) {
             uiState = PhonemeIsolationUiState.Question(
                 question = PhonemeIsolationQuestion("cat", image, target, listOf(target, distractor)),
                 isWordHeard = true,
-                selectedOption = selectCorrect?.let { if (it) target else distractor },
-                hasNext = true
+                selectedOption = selectCorrect?.let { if (it) target else distractor }
             ),
             onPlayWord = {},
             onOptionSelected = {},

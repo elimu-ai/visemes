@@ -24,15 +24,12 @@ data class PhonemeIsolationQuestion<I : Any>(
 
 object PhonemeIsolationQuestionFactory {
 
-    /** The number of questions (letter-sounds) in one session. */
-    const val MAX_QUESTIONS = 10
-
     /** The distractor is picked from this many of the most frequent sounds that qualify. */
     private const val DISTRACTOR_POOL_SIZE = 5
 
     /**
-     * Builds one question per letter-sound that a word starts with, each using the first word in
-     * [words] which starts with it and has a picture.
+     * Builds a question about the [target] letter-sound, using the first word in [words] which
+     * starts with it and has a picture.
      *
      * Only letter-sounds with a single sound can be assessed or offered, since the learner has to
      * isolate one phoneme. (So not e.g. "x", which makes /k/ followed by /s/.)
@@ -40,54 +37,54 @@ object PhonemeIsolationQuestionFactory {
      * The distractor is a sound that is not heard anywhere in the word, with different letters
      * than the correct answer.
      *
-     * @param words The words to choose from, the preferred (most frequent) ones first. No more
-     * words are read once there are [maxQuestions] questions.
-     * @param letterSounds All letter-sounds, which the distractors are picked from.
-     * @return The questions, with the most frequent letter-sound first. Empty if there is no word
-     * that a question can be made from.
+     * @param words The words to choose from, the preferred (most frequent) ones first.
+     * @param letterSounds All letter-sounds, which the distractor is picked from.
+     * @return `null` if there is no word that a question can be made from.
      */
     fun <I : Any> create(
+        target: LetterSoundCandidate,
         words: Sequence<WordCandidate<I>>,
         letterSounds: List<LetterSoundCandidate>,
-        maxQuestions: Int = MAX_QUESTIONS,
         random: Random = Random.Default
-    ): List<PhonemeIsolationQuestion<I>> {
+    ): PhonemeIsolationQuestion<I>? {
+        if (!target.isSinglePhoneme()) return null
+
         val distractors = letterSounds
             .filter { it.isSinglePhoneme() }
             .sortedByDescending { it.usageCount }
             // One per sound, so that a sound with several spellings isn't picked more often
             .distinctBy { it.soundsIpa }
 
-        val questions = mutableMapOf<Pair<String, List<String>>, PhonemeIsolationQuestion<I>>()
-        for (word in words) {
-            if (questions.size >= maxQuestions) break
-            if (word.text.isBlank()) continue
+        return words
+            // A cheap check first, since reading the letter-sounds of a word takes several queries
+            .filter { it.text.startsWith(target.letters, ignoreCase = true) }
+            .firstNotNullOfOrNull { word ->
+                val wordLetterSounds = word.loadLetterSounds()
+                val first = wordLetterSounds.firstOrNull() ?: return@firstNotNullOfOrNull null
+                if (!first.letters.equals(target.letters, ignoreCase = true) ||
+                    first.soundsIpa != target.soundsIpa
+                ) {
+                    return@firstNotNullOfOrNull null
+                }
 
-            val wordLetterSounds = word.loadLetterSounds()
-            val target = wordLetterSounds.firstOrNull()?.takeIf { it.isSinglePhoneme() } ?: continue
-            val key = target.letters.lowercase() to target.soundsIpa
-            if (key in questions) continue
+                val soundsInWord = wordLetterSounds.flatMap { it.soundsIpa }.toSet()
+                val distractor = distractors
+                    .filter { it.soundsIpa.single() !in soundsInWord }
+                    .filter { !it.letters.equals(target.letters, ignoreCase = true) }
+                    .take(DISTRACTOR_POOL_SIZE)
+                    .randomOrNull(random)
+                    ?: return@firstNotNullOfOrNull null
 
-            val soundsInWord = wordLetterSounds.flatMap { it.soundsIpa }.toSet()
-            val distractor = distractors
-                .filter { it.soundsIpa.single() !in soundsInWord }
-                .filter { !it.letters.equals(target.letters, ignoreCase = true) }
-                .take(DISTRACTOR_POOL_SIZE)
-                .randomOrNull(random)
-                ?: continue
+                // Read last, since it is the most expensive part
+                val image = word.loadImage() ?: return@firstNotNullOfOrNull null
 
-            // Read last, since it is the most expensive part
-            val image = word.loadImage() ?: continue
-
-            questions[key] = PhonemeIsolationQuestion(
-                word = word.text,
-                image = image,
-                target = target,
-                options = listOf(target, distractor).shuffled(random)
-            )
-        }
-
-        return questions.values.sortedByDescending { it.target.usageCount }
+                PhonemeIsolationQuestion(
+                    word = word.text,
+                    image = image,
+                    target = target,
+                    options = listOf(target, distractor).shuffled(random)
+                )
+            }
     }
 
     private fun LetterSoundCandidate.isSinglePhoneme(): Boolean {

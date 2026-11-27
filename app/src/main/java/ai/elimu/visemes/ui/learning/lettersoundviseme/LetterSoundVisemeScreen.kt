@@ -8,14 +8,9 @@ import ai.elimu.visemes.ui.RaisedSurface
 import ai.elimu.visemes.ui.VisemeColorScheme
 import ai.elimu.visemes.ui.lips.AnimatedLips
 import ai.elimu.visemes.viseme.Viseme
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +29,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -53,9 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** How long it takes to slide from one letter-sound to the next. */
-private const val TASK_TRANSITION_MS = 450
-
 /** The "skin" behind the lips. It makes the purple lips easy to see. */
 private val FaceColor = Color(0xFFFFE0C7)
 
@@ -65,60 +56,17 @@ fun LetterSoundVisemeScreen(
     playback: PlaybackState,
     onPlaySound: () -> Unit,
     modifier: Modifier = Modifier,
-    /** Whether to show the arrow for going to the next sound (after the sound has been played). */
+    /** Whether to show the arrow for going on (after the sound has been played). */
     showNext: Boolean = false,
-    onNextSound: () -> Unit = {}
+    onNext: () -> Unit = {}
 ) {
     Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedContent(
-                targetState = uiState,
-                // Only a different letter-sound is a new "task". (Not e.g. `hasNext` changing.)
-                contentKey = { state ->
-                    if (state is LetterSoundVisemeUiState.Loaded) {
-                        "loaded:${state.letters}:${state.soundsIpa}"
-                    } else {
-                        state.toString()
-                    }
-                },
-                transitionSpec = {
-                    if (initialState is LetterSoundVisemeUiState.Loaded &&
-                        targetState is LetterSoundVisemeUiState.Loaded
-                    ) {
-                        // From one task to the next: the current one slides away to the left, and
-                        // the next one comes in from the right
-                        (slideInHorizontally(tween(TASK_TRANSITION_MS)) { fullWidth -> fullWidth } +
-                            fadeIn(tween(TASK_TRANSITION_MS))) togetherWith
-                            (slideOutHorizontally(tween(TASK_TRANSITION_MS)) { fullWidth -> -fullWidth } +
-                                fadeOut(tween(TASK_TRANSITION_MS)))
-                    } else {
-                        fadeIn() togetherWith fadeOut()
-                    }
-                },
-                modifier = Modifier.fillMaxSize(),
-                label = "letterSoundTransition"
-            ) { state ->
-                when (state) {
-                    LetterSoundVisemeUiState.Loading -> Centered {
-                        CircularProgressIndicator()
-                    }
-
-                    LetterSoundVisemeUiState.Unavailable -> Centered {
-                        Text(
-                            text = stringResource(R.string.letter_sound_unavailable),
-                            style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(32.dp)
-                        )
-                    }
-
-                    is LetterSoundVisemeUiState.Loaded -> LoadedContent(
-                        state = state,
-                        playback = playback,
-                        onPlaySound = onPlaySound
-                    )
-                }
-            }
+            LetterSoundContent(
+                state = uiState,
+                playback = playback,
+                onPlaySound = onPlaySound
+            )
 
             // In the bottom right corner of the screen
             AnimatedVisibility(
@@ -137,8 +85,8 @@ fun LetterSoundVisemeScreen(
                 // be inside it. Otherwise the bottom of the button is cut off.
                 Box(modifier = Modifier.padding(bottom = RaisedEdgeHeight)) {
                     NextButton(
-                        description = stringResource(R.string.next_sound),
-                        onClick = onNextSound,
+                        description = stringResource(R.string.next),
+                        onClick = onNext,
                         shape = CircleShape,
                         modifier = Modifier.size(56.dp)
                     )
@@ -149,21 +97,8 @@ fun LetterSoundVisemeScreen(
 }
 
 @Composable
-private fun Centered(content: @Composable () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun LoadedContent(
-    state: LetterSoundVisemeUiState.Loaded,
+private fun LetterSoundContent(
+    state: LetterSoundVisemeUiState,
     playback: PlaybackState,
     onPlaySound: () -> Unit
 ) {
@@ -223,7 +158,7 @@ private fun LoadedContent(
 
 /** The sound(s) in IPA (e.g. /æ/), and the letter(s) that make the sound (e.g. "a"). */
 @Composable
-private fun SoundLabel(state: LetterSoundVisemeUiState.Loaded) {
+private fun SoundLabel(state: LetterSoundVisemeUiState) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = state.soundsIpa.joinToString(" ") { "/$it/" },
@@ -243,7 +178,7 @@ private fun SoundLabel(state: LetterSoundVisemeUiState.Loaded) {
 /** The animated mouth. Pressing it plays the sound. */
 @Composable
 private fun MouthPanel(
-    state: LetterSoundVisemeUiState.Loaded,
+    state: LetterSoundVisemeUiState,
     playback: PlaybackState,
     onPlaySound: () -> Unit,
     modifier: Modifier = Modifier
@@ -290,7 +225,7 @@ private fun PlaySoundButton(onClick: () -> Unit) {
 private fun LoadedPreview() {
     MaterialTheme(colorScheme = VisemeColorScheme) {
         LetterSoundVisemeScreen(
-            uiState = LetterSoundVisemeUiState.Loaded(
+            uiState = LetterSoundVisemeUiState(
                 letters = "a",
                 soundsIpa = listOf("æ"),
                 visemes = listOf(Viseme.NEAR_OPEN_FRONT)
@@ -306,16 +241,15 @@ private fun LoadedPreview() {
 private fun NextSoundPreview() {
     MaterialTheme(colorScheme = VisemeColorScheme) {
         LetterSoundVisemeScreen(
-            uiState = LetterSoundVisemeUiState.Loaded(
+            uiState = LetterSoundVisemeUiState(
                 letters = "a",
                 soundsIpa = listOf("æ"),
-                visemes = listOf(Viseme.NEAR_OPEN_FRONT),
-                hasNext = true
+                visemes = listOf(Viseme.NEAR_OPEN_FRONT)
             ),
             playback = PlaybackState(playId = 1, isPlaying = false),
             onPlaySound = {},
             showNext = true,
-            onNextSound = {}
+            onNext = {}
         )
     }
 }
@@ -325,23 +259,11 @@ private fun NextSoundPreview() {
 private fun LoadedLandscapePreview() {
     MaterialTheme(colorScheme = VisemeColorScheme) {
         LetterSoundVisemeScreen(
-            uiState = LetterSoundVisemeUiState.Loaded(
+            uiState = LetterSoundVisemeUiState(
                 letters = "x",
                 soundsIpa = listOf("k", "s"),
                 visemes = listOf(Viseme.VELAR, Viseme.SIBILANT)
             ),
-            playback = PlaybackState(),
-            onPlaySound = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, widthDp = 400, heightDp = 700)
-@Composable
-private fun UnavailablePreview() {
-    MaterialTheme(colorScheme = VisemeColorScheme) {
-        LetterSoundVisemeScreen(
-            uiState = LetterSoundVisemeUiState.Unavailable,
             playback = PlaybackState(),
             onPlaySound = {}
         )

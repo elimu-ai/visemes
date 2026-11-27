@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.learning.lettersoundviseme.LetterSoundVisemeActivity"
+            android:name=".ui.session.LetterSoundSessionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,9 +29,14 @@
             </intent-filter>
         </activity>
 
-        <!-- Exported, so that it can be opened by other apps -->
+        <!-- Opened by LetterSoundSessionActivity, one after the other -->
+        <activity
+            android:name=".ui.learning.lettersoundviseme.LetterSoundVisemeActivity"
+            android:exported="false"
+            android:theme="@style/TaskTheme" />
         <activity
             android:name=".ui.assessment.phonemeisolation.PhonemeIsolationAssessmentActivity"
-            android:exported="true" />
+            android:exported="false"
+            android:theme="@style/TaskTheme" />
     </application>
 </manifest>

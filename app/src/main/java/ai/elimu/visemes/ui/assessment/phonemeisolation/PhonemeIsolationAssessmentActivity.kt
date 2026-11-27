@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
@@ -17,9 +18,11 @@ import androidx.compose.runtime.getValue
  * Assesses phoneme isolation: the learner sees a picture of a word, and picks which of two sounds
  * the word starts with.
  *
- * The words, pictures and letter-sounds are loaded from the elimu.ai Content Provider.
+ * Which letter-sound to assess is given by the caller (see `Intent.putLetterSound`). The words,
+ * pictures and letter-sounds are loaded from the elimu.ai Content Provider.
  *
- * The activity finishes with [RESULT_OK] when the learner goes on from the last question.
+ * The activity finishes with [RESULT_OK] when the learner presses the arrow after answering, or
+ * right away if no question can be made for the letter-sound.
  */
 class PhonemeIsolationAssessmentActivity : ComponentActivity() {
 
@@ -40,20 +43,25 @@ class PhonemeIsolationAssessmentActivity : ComponentActivity() {
         setContent {
             val uiState by viewModel.uiState.collectAsState()
 
+            // Nothing to ask about this letter-sound, so move on
+            LaunchedEffect(uiState) {
+                if (uiState == PhonemeIsolationUiState.Unavailable) complete()
+            }
+
             MaterialTheme(colorScheme = VisemeColorScheme) {
                 PhonemeIsolationAssessmentScreen(
                     uiState = uiState,
                     onPlayWord = viewModel::playWord,
                     onOptionSelected = viewModel::selectOption,
-                    onNext = {
-                        if (viewModel.next()) {
-                            setResult(RESULT_OK)
-                            finish()
-                        }
-                    }
+                    onNext = ::complete
                 )
             }
         }
+    }
+
+    private fun complete() {
+        setResult(RESULT_OK)
+        finish()
     }
 
     override fun onStop() {

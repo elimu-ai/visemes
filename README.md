@@ -2,7 +2,9 @@
 
 Android application which animates visemes
 
-A viseme is the mouth shape that goes with a speech sound. The app loads all letter-sound correspondences from the [elimu.ai Content Provider](https://github.com/elimu-ai/content-provider), picks the most frequently used one, and shows its sound(s) together with an animated cartoon mouth (purple lips, teeth and tongue). Press the mouth, or the button, to hear the sound: while it plays, the mouth moves from neutral to the shape of the sound, and back to neutral.
+A viseme is the mouth shape that goes with a speech sound. The app loads all letter-sound correspondences from the [elimu.ai Content Provider](https://github.com/elimu-ai/content-provider), and goes through them, the most frequently used one first. For each letter-sound, the student gets a learning activity followed by an assessment activity, before moving on to the next one.
+
+The learning activity shows the sound(s) together with an animated cartoon mouth (purple lips, teeth and tongue). Press the mouth, or the button, to hear the sound: while it plays, the mouth moves from neutral to the shape of the sound, and back to neutral.
 
 Built with Jetpack Compose.
 
@@ -15,17 +17,12 @@ Components that activities share are in `ui/`.
 
 | Part | Where |
 | --- | --- |
-| Screen showing the most frequent letter-sound | `ui/learning/lettersoundviseme/` |
+| Order of the activities | `ui/session/` |
+| Learning: how to make the sound | `ui/learning/lettersoundviseme/` |
 | Assessment: which sound does the pictured word start with? | `ui/assessment/phonemeisolation/` |
 | `@Composable` lips, drawn on a `Canvas` | `ui/lips/Lips.kt` |
 | Neutral → sound → neutral animation | `ui/lips/AnimatedLips.kt` |
 | Mouth shape of each IPA sound | `viseme/Viseme.kt`, `viseme/VisemeMapper.kt` |
-
-The phoneme isolation assessment has no launcher icon. Open it in a debug build with:
-
-```
-adb shell am start -n ai.elimu.visemes.debug/ai.elimu.visemes.ui.assessment.phonemeisolation.PhonemeIsolationAssessmentActivity
-```
 
 **Requires** the elimu.ai Content Provider app to be installed on the device.
 
