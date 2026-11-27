@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-    implementation libs.elimu.analytics // https://jitpack.io/#ai.elimu/analytics
     implementation libs.elimu.content.provider // https://jitpack.io/#ai.elimu/content-provider
 
     // Jetpack Compose
