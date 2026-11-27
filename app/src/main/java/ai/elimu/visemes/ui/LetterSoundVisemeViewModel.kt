@@ -1,5 +1,8 @@
 package ai.elimu.visemes.ui
 
+import ai.elimu.analytics.utils.LearningEventUtil
+import ai.elimu.model.v2.enums.content.LiteracySkill
+import ai.elimu.visemes.BuildConfig
 import ai.elimu.visemes.audio.PlaybackState
 import ai.elimu.visemes.audio.SoundPlayer
 import ai.elimu.visemes.content.LetterSoundQueue
@@ -127,8 +130,19 @@ class LetterSoundVisemeViewModel(application: Application) : AndroidViewModel(ap
     fun playSound() {
         val state = _uiState.value
         if (state is LetterSoundVisemeUiState.Loaded) {
-            soundPlayer.play(state.letters)
+            if (soundPlayer.play(state.letters)) {
+                reportLearningEvent()
+            }
         }
+    }
+
+    /** Reports to the Analytics application (https://github.com/elimu-ai/analytics). */
+    private fun reportLearningEvent() {
+        LearningEventUtil.reportLiteracyLearningEvent(
+            literacySkill = LiteracySkill.PHONEMIC_AWARENESS,
+            context = getApplication<Application>(),
+            analyticsApplicationId = BuildConfig.ANALYTICS_APPLICATION_ID
+        )
     }
 
     fun stopSound() {
