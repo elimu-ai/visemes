@@ -28,5 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Exported, so that it can be opened by other apps -->
+        <activity
+            android:name=".ui.assessment.phonemeisolation.PhonemeIsolationAssessmentActivity"
+            android:exported="true" />
     </application>
 </manifest>

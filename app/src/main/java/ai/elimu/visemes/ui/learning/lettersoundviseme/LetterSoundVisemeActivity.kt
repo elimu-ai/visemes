@@ -1,5 +1,6 @@
 package ai.elimu.visemes.ui.learning.lettersoundviseme
 
+import ai.elimu.visemes.ui.VisemeColorScheme
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log

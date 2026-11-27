@@ -1,6 +1,7 @@
 package ai.elimu.visemes.content
 
 import ai.elimu.content_provider.utils.ContentProviderUtil.getAllLetterSoundGsons
+import ai.elimu.model.v2.gson.content.LetterSoundGson
 import ai.elimu.visemes.BuildConfig
 import android.content.Context
 import android.util.Log
@@ -26,13 +27,13 @@ object LetterSoundRepository {
         )
         Log.i(TAG, "letterSoundGsons.size: " + letterSoundGsons.size)
 
-        letterSoundGsons.map { letterSoundGson ->
-            LetterSoundCandidate(
-                letters = letterSoundGson.letters.joinToString("") { it.text },
-                soundsIpa = letterSoundGson.sounds.map { it.valueIpa },
-                // `usageCount` is nullable on the Java model
-                usageCount = letterSoundGson.usageCount ?: 0
-            )
-        }
+        letterSoundGsons.map { it.toCandidate() }
     }
 }
+
+internal fun LetterSoundGson.toCandidate() = LetterSoundCandidate(
+    letters = letters.joinToString("") { it.text },
+    soundsIpa = sounds.map { it.valueIpa },
+    // `usageCount` is nullable on the Java model
+    usageCount = usageCount ?: 0
+)

@@ -6,4 +6,10 @@
     <!-- The lips are purely visual, so this is used as the accessibility description. -->
     <string name="lips_description">Animated mouth showing how to move the lips and tongue to make the sound. Press to hear the sound.</string>
     <string name="letter_sound_unavailable">Letters could not be loaded. Please make sure the content provider app is installed.</string>
+
+    <string name="play_word">Picture. Press to hear the word.</string>
+    <string name="next_question">Next question</string>
+    <string name="answer_correct">Correct</string>
+    <string name="answer_incorrect">Incorrect</string>
+    <string name="phoneme_isolation_unavailable">Words could not be loaded. Please make sure the content provider app is installed.</string>
 </resources>

@@ -2,8 +2,10 @@ package ai.elimu.visemes.ui.learning.lettersoundviseme
 
 import ai.elimu.visemes.R
 import ai.elimu.visemes.audio.PlaybackState
+import ai.elimu.visemes.ui.NextButton
 import ai.elimu.visemes.ui.RaisedEdgeHeight
 import ai.elimu.visemes.ui.RaisedSurface
+import ai.elimu.visemes.ui.VisemeColorScheme
 import ai.elimu.visemes.ui.lips.AnimatedLips
 import ai.elimu.visemes.viseme.Viseme
 import androidx.compose.animation.AnimatedContent
@@ -14,7 +16,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,14 +38,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -58,18 +56,8 @@ import androidx.compose.ui.unit.sp
 /** How long it takes to slide from one letter-sound to the next. */
 private const val TASK_TRANSITION_MS = 450
 
-private val Purple = Color(0xFF7B3FA0)
-
 /** The "skin" behind the lips. It makes the purple lips easy to see. */
 private val FaceColor = Color(0xFFFFE0C7)
-
-/** Flat purple-on-off-white look. */
-internal val VisemeColorScheme = lightColorScheme(
-    primary = Purple,
-    onPrimary = Color.White,
-    background = Color(0xFFFAF7FC),
-    surface = Color(0xFFFAF7FC)
-)
 
 @Composable
 fun LetterSoundVisemeScreen(
@@ -148,35 +136,14 @@ fun LetterSoundVisemeScreen(
                 // drawn in a layer that is cut off at the edge of the content, so the edge has to
                 // be inside it. Otherwise the bottom of the button is cut off.
                 Box(modifier = Modifier.padding(bottom = RaisedEdgeHeight)) {
-                    NextSoundButton(onClick = onNextSound)
+                    NextButton(
+                        description = stringResource(R.string.next_sound),
+                        onClick = onNextSound,
+                        shape = CircleShape,
+                        modifier = Modifier.size(56.dp)
+                    )
                 }
             }
-        }
-    }
-}
-
-/** A round button with an arrow pointing to the right, for going on to the next sound. */
-@Composable
-private fun NextSoundButton(onClick: () -> Unit) {
-    val description = stringResource(R.string.next_sound)
-    RaisedSurface(
-        faceColor = MaterialTheme.colorScheme.primary,
-        shape = CircleShape,
-        onClick = onClick,
-        modifier = Modifier
-            .size(56.dp)
-            .semantics { contentDescription = description }
-    ) {
-        val arrowColor = MaterialTheme.colorScheme.onPrimary
-        Canvas(modifier = Modifier.size(28.dp)) {
-            val strokeWidth = 3.dp.toPx()
-            val tail = Offset(size.width * 0.1f, size.height / 2f)
-            val tip = Offset(size.width * 0.9f, size.height / 2f)
-            val headSize = size.width * 0.38f
-
-            drawLine(arrowColor, tail, tip, strokeWidth, StrokeCap.Round)
-            drawLine(arrowColor, tip, Offset(tip.x - headSize, tip.y - headSize), strokeWidth, StrokeCap.Round)
-            drawLine(arrowColor, tip, Offset(tip.x - headSize, tip.y + headSize), strokeWidth, StrokeCap.Round)
         }
     }
 }

@@ -16,9 +16,16 @@ Components that activities share are in `ui/`.
 | Part | Where |
 | --- | --- |
 | Screen showing the most frequent letter-sound | `ui/learning/lettersoundviseme/` |
+| Assessment: which sound does the pictured word start with? | `ui/assessment/phonemeisolation/` |
 | `@Composable` lips, drawn on a `Canvas` | `ui/lips/Lips.kt` |
 | Neutral → sound → neutral animation | `ui/lips/AnimatedLips.kt` |
 | Mouth shape of each IPA sound | `viseme/Viseme.kt`, `viseme/VisemeMapper.kt` |
+
+The phoneme isolation assessment has no launcher icon. Open it in a debug build with:
+
+```
+adb shell am start -n ai.elimu.visemes.debug/ai.elimu.visemes.ui.assessment.phonemeisolation.PhonemeIsolationAssessmentActivity
+```
 
 **Requires** the elimu.ai Content Provider app to be installed on the device.
 
