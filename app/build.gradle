@@ -17,7 +17,7 @@ android {
         minSdkVersion 29
         targetSdkVersion 36
         versionCode 2000005
-        versionName "2.0.5-SNAPSHOT"
+        versionName "2.0.5"
     }
 
     compileOptions {
